@@ -1,37 +1,61 @@
 const express = require("express");
 const app = express();
-const path = require("path");
 const http = require('http').Server(app);
 const io = require("socket.io")(http)
+const formatMessage = require("./public/assets/js/messages")
+const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require("./public/assets/js/users")
 
 const PORT = process.env.PORT || 3001;
 
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "./public/index.html"))
+const botName = "ChatApp Bot"
+// Run when client connect
+io.on('connection', socket => {
+    //
+    socket.on("joinRoom", ({ userName, room }) => {
+        const user = userJoin(socket.id, userName, room);
+
+        socket.join(room)
+
+        // Wellcome current user
+        socket.emit("message", formatMessage(botName, "Wellcome to ChatApp"));
+
+        // Broadcast when a user connect
+        socket.broadcast.to(user.room).emit("message", formatMessage(botName, `${user.userName} has joined the chat`));
+
+        // send users and room info
+        io.to(user.room).emit("roomUsers", {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        })
+    });
+ 
+    // Listen for chatMessage
+    socket.on("chatMessage", (msg) => {
+        const user = getCurrentUser(socket.id);
+        
+        io.to(user.room).emit("message", formatMessage(user.userName, msg))
+    })
+
+    // Run when client disconnects
+    socket.on("disconnect", () => {
+        const user = userLeave(socket.id);
+        
+        if (user) {
+            io.to(user.room).emit("message", formatMessage(botName, `${user.userName} has left the chat`));
+
+        }
+
+         // send users and room info
+         io.to(user.room).emit("roomUsers", {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        })
+    })
 })
 
-users = [];
-io.on('connection', function (socket) {
-    console.log('A user connected');
-    socket.on('setUsername', function (data) {
-        console.log(data);
-        if (users.indexOf(data) > -1) {
-            socket.emit('userExists', data + ' username is taken! Try some other username.');
-        } else {
-            users.push(data);
-            socket.emit('userSet', { username: data });
-        }
-    });
-    socket.on('msg', function (data) {
-        //Send message to everyone
-        io.sockets.emit('newmsg', data);
-    })
-    socket.on("disconnect", function (data) {
-        console.log('A user disconnected');
-    })
-});
+
 http.listen(PORT, () => {
     console.log(`App listening at http://localhost:${PORT}`)
 })

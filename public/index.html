@@ -1,45 +1,49 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
-    
-</head>
-<script src="/socket.io/socket.io.js"></script>
-   <script>
-      var socket = io();
-      function setUsername(){
-         socket.emit('setUsername', document.getElementById('name').value);
-      };
-      var user;
-      socket.on('userExists', function(data){
-         document.getElementById('error-container').innerHTML = data;
-      });
-      socket.on('userSet', function(data){
-         user = data.username;
-         document.body.innerHTML = '<input type="text" id="message">\
-         <button type="button" name="button" onclick="sendMessage()">Send</button>\
-         <div id="message-container"></div>';
-      });
-      function sendMessage(){
-         var msg = document.getElementById('message').value;
-         if(msg){
-            socket.emit('msg', {message: msg, user: user});
-            document.getElementById('message').value = "";
-         }
-      }
-      socket.on('newmsg', function(data){
-         if(user){
-            document.getElementById('message-container').innerHTML +='<div><b>' + data.user + '</b>: ' + data.message + '</div>'
-         }
-      })
-   </script>
-<body>
-    <div id="error-container"></div>
-      <input id="name" type="text" name="name" value="" placeholder="Enter your name!">
-      <button type="button" name="button" onclick="setUsername()">Let me chat!</button>
-</body>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+			integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+			crossorigin="anonymous"
+		/>
+		<link rel="stylesheet" href="./assets/css/style.css" />
+		<title>Chat App</title>
+	</head>
+	<body>
+		<div class="join-container">
+			<header class="join-header">
+				<h1><i class="fas fa-smile"></i> ChatCord</h1>
+			</header>
+			<main class="join-main">
+				<form action="chat.html">
+					<div class="form-control">
+						<label for="username">Username</label>
+						<input
+							type="text"
+							name="username"
+							id="username"
+							placeholder="Enter username..."
+							required
+						/>
+					</div>
+					<div class="form-control">
+						<label for="room">Room</label>
+						<select name="room" id="room">
+							<option value="JavaScript">JavaScript</option>
+							<option value="Python">Python</option>
+							<option value="PHP">PHP</option>
+							<option value="C#">C#</option>
+							<option value="Ruby">Ruby</option>
+							<option value="Java">Java</option>
+						</select>
+					</div>
+					<button type="submit" class="btn">Join Chat</button>
+				</form>
+			</main>
+		</div>
+	</body>
 </html>
