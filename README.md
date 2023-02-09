@@ -15,7 +15,7 @@ This app is built to create a chat application where users are able to join room
 ## Usage Information
 Run `node server.js` in the command line or access this
 
-[Link](https://van-tech-blog-app.herokuapp.com/) for a deployed application.
+[Link](https://van-real-time-chat.herokuapp.com/) for a deployed application.
 
 ![homepage](./public/assets/images/realTimeChat.PNG)
 
