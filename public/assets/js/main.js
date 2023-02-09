@@ -12,10 +12,10 @@ const userList = document.getElementById("users");
 const socket = io();
 
 // Join chat room
-socket.emit("joinRoom", {userName, room})
+socket.emit("joinRoom", { userName, room })
 
 // Get room and users
-socket.on("roomUsers", ({room, users}) => {
+socket.on("roomUsers", ({ room, users }) => {
     console.log(room)
 
     outputRoomName(room);
@@ -32,7 +32,7 @@ socket.on("message", message => {
     // Scroll down
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    
+
 })
 
 // Message submit
@@ -74,3 +74,12 @@ function outputUsers(users) {
     `
 
 }
+
+//Prompt the user before leave chat room
+document.getElementById('leave-btn').addEventListener('click', () => {
+    const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
+    if (leaveRoom) {
+        window.location = '../index.html';
+    } else {
+    }
+});
